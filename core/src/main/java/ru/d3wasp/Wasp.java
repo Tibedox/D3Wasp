@@ -3,12 +3,17 @@ package ru.d3wasp;
 import static ru.d3wasp.Main.*;
 
 public class Wasp {
-    float x = 0;
-    float y = 100;
+    float x;
+    float y;
     float width = 200;
     float height = 200;
     float stepX = 5;
     float stepY = 3;
+
+    Wasp(float x, float y){
+        this.x = x;
+        this.y = y;
+    }
 
     void fly(){
         x += stepX;
