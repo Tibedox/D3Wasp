@@ -21,4 +21,8 @@ public class Wasp {
         if(x>SCR_WIDTH - width || x<0) stepX = -stepX;
         if(y>SCR_HEIGHT - height || y<0) stepY = -stepY;
     }
+
+    boolean flip(){
+        return stepX<0;
+    }
 }
