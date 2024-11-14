@@ -12,15 +12,21 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private Texture imgBackGround;
     private Texture imgWasp;
+    private Texture imgTrump;
     private Wasp[] wasp = new Wasp[33];
+    private Trump[] trump = new Trump[22];
 
     @Override
     public void create() {
         batch = new SpriteBatch();
         imgBackGround = new Texture("bg.png");
         imgWasp = new Texture("wasp.png");
+        imgTrump = new Texture("trump.png");
         for (int i = 0; i < wasp.length; i++) {
             wasp[i] = new Wasp(SCR_WIDTH/2, SCR_HEIGHT/2);
+        }
+        for (int i = 0; i < trump.length; i++) {
+            trump[i] = new Trump(0, 0);
         }
     }
 
@@ -30,12 +36,18 @@ public class Main extends ApplicationAdapter {
             wasp[i].fly();
         }
         // for(Wasp w: wasp) w.fly();
+        for (int i = 0; i < trump.length; i++) {
+            trump[i].fly();
+        }
 
         // ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();
         batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
         for (int i = 0; i < wasp.length; i++) {
             batch.draw(imgWasp, wasp[i].x, wasp[i].y, wasp[i].width, wasp[i].height, 0, 0, 200, 200, wasp[i].flip(), false);
+        }
+        for (int i = 0; i < trump.length; i++) {
+            batch.draw(imgTrump, trump[i].x, trump[i].y, trump[i].width, trump[i].height, 0, 0, 250, 200, trump[i].flip(), false);
         }
         batch.end();
     }
@@ -45,5 +57,6 @@ public class Main extends ApplicationAdapter {
         batch.dispose();
         imgBackGround.dispose();
         imgWasp.dispose();
+        imgTrump.dispose();
     }
 }
