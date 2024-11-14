@@ -2,17 +2,22 @@ package ru.d3wasp;
 
 import static ru.d3wasp.Main.*;
 
+import com.badlogic.gdx.math.MathUtils;
+
 public class Wasp {
     float x;
     float y;
-    float width = 200;
-    float height = 200;
-    float stepX = 5;
-    float stepY = 3;
+    float width;
+    float height;
+    float stepX;
+    float stepY;
 
     Wasp(float x, float y){
         this.x = x;
         this.y = y;
+        width = height = MathUtils.random(50, 150);
+        stepX = MathUtils.random(-5, 5);
+        stepY = MathUtils.random(-5, 5);
     }
 
     void fly(){
