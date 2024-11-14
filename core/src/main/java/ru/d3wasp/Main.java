@@ -10,13 +10,15 @@ public class Main extends ApplicationAdapter {
     public static final float SCR_WIDTH = 1280;
     public static final float SCR_HEIGHT = 720;
     private SpriteBatch batch;
-    private Texture image;
-    Wasp[] wasp = new Wasp[333];
+    private Texture imgBackGround;
+    private Texture imgWasp;
+    private Wasp[] wasp = new Wasp[33];
 
     @Override
     public void create() {
         batch = new SpriteBatch();
-        image = new Texture("wasp.png");
+        imgBackGround = new Texture("bg.png");
+        imgWasp = new Texture("wasp.png");
         for (int i = 0; i < wasp.length; i++) {
             wasp[i] = new Wasp(SCR_WIDTH/2, SCR_HEIGHT/2);
         }
@@ -29,10 +31,11 @@ public class Main extends ApplicationAdapter {
         }
         // for(Wasp w: wasp) w.fly();
 
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        // ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
         batch.begin();
+        batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
         for (int i = 0; i < wasp.length; i++) {
-            batch.draw(image, wasp[i].x, wasp[i].y, wasp[i].width, wasp[i].height, 0, 0, 200, 200, wasp[i].flip(), false);
+            batch.draw(imgWasp, wasp[i].x, wasp[i].y, wasp[i].width, wasp[i].height, 0, 0, 200, 200, wasp[i].flip(), false);
         }
         batch.end();
     }
@@ -40,6 +43,7 @@ public class Main extends ApplicationAdapter {
     @Override
     public void dispose() {
         batch.dispose();
-        image.dispose();
+        imgBackGround.dispose();
+        imgWasp.dispose();
     }
 }

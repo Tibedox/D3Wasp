@@ -5,29 +5,29 @@ import static ru.d3wasp.Main.*;
 import com.badlogic.gdx.math.MathUtils;
 
 public class Wasp {
-    float x;
-    float y;
-    float width;
-    float height;
-    float stepX;
-    float stepY;
+    public float x;
+    public float y;
+    public float width;
+    public float height;
+    private float stepX;
+    private float stepY;
 
-    Wasp(float x, float y){
+    public Wasp(float x, float y){
         this.x = x;
         this.y = y;
         width = height = MathUtils.random(50, 150);
-        stepX = MathUtils.random(-5, 5);
-        stepY = MathUtils.random(-5, 5);
+        stepX = MathUtils.random(-5f, 5);
+        stepY = MathUtils.random(-5f, 5);
     }
 
-    void fly(){
+    public void fly(){
         x += stepX;
         y += stepY;
         if(x>SCR_WIDTH - width || x<0) stepX = -stepX;
         if(y>SCR_HEIGHT - height || y<0) stepY = -stepY;
     }
 
-    boolean flip(){
+    public boolean flip(){
         return stepX<0;
     }
 }
