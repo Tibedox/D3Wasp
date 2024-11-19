@@ -41,10 +41,14 @@ public class Main extends ApplicationAdapter {
             float tx = Gdx.input.getX();
             float ty = SCR_HEIGHT-Gdx.input.getY();
             for (int i = 0; i < wasp.length; i++) {
-                if(wasp[i].hit(tx, ty)) System.out.println("hit to Wasp");
+                if(wasp[i].hit(tx, ty)) {
+                    wasp[i].leave();
+                }
             }
             for (int i = 0; i < trump.length; i++) {
-                if(trump[i].hit(tx, ty)) System.out.println("hit to Trump");
+                if(trump[i].hit(tx, ty)) {
+                    trump[i].leave();
+                }
             }
         }
 

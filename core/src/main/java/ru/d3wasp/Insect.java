@@ -5,13 +5,14 @@ import static ru.d3wasp.Main.SCR_WIDTH;
 
 import com.badlogic.gdx.math.MathUtils;
 
-public class Insect {
+abstract public class Insect {
     public float x;
     public float y;
     public float width;
     public float height;
-    private float stepX;
-    private float stepY;
+    float stepX;
+    float stepY;
+    boolean isLeave;
 
     public Insect(float x, float y){
         this.x = x;
@@ -24,8 +25,10 @@ public class Insect {
     public void fly(){
         x += stepX;
         y += stepY;
-        if(x>SCR_WIDTH - width || x<0) stepX = -stepX;
-        if(y>SCR_HEIGHT - height || y<0) stepY = -stepY;
+        if(!isLeave) {
+            if (x > SCR_WIDTH - width || x < 0) stepX = -stepX;
+            if (y > SCR_HEIGHT - height || y < 0) stepY = -stepY;
+        }
     }
 
     public boolean flip(){
@@ -35,4 +38,6 @@ public class Insect {
     boolean hit(float tx, float ty){
         return x<tx && tx<x+width && y<ty && ty<y+height;
     }
+
+    abstract void leave();
 }
