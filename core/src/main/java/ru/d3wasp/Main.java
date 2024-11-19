@@ -3,25 +3,29 @@ package ru.d3wasp;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends ApplicationAdapter {
     public static final float SCR_WIDTH = 1280;
     public static final float SCR_HEIGHT = 720;
+
     private SpriteBatch batch;
+    SB2 batch2;
     private Texture imgBackGround;
     private Texture imgWasp;
     private Texture imgTrump;
+
     private Wasp[] wasp = new Wasp[33];
     private Trump[] trump = new Trump[22];
 
     @Override
     public void create() {
         batch = new SpriteBatch();
+        batch2 = new SB2();
+
         imgBackGround = new Texture("bg.png");
         imgWasp = new Texture("wasp.png");
         imgTrump = new Texture("trump.png");
+
         for (int i = 0; i < wasp.length; i++) {
             wasp[i] = new Wasp(SCR_WIDTH/2, SCR_HEIGHT/2);
         }
@@ -32,6 +36,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render() {
+        // события
         for (int i = 0; i < wasp.length; i++) {
             wasp[i].fly();
         }
@@ -40,7 +45,7 @@ public class Main extends ApplicationAdapter {
             trump[i].fly();
         }
 
-        // ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+        // отрисовка
         batch.begin();
         batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
         for (int i = 0; i < wasp.length; i++) {
@@ -59,4 +64,8 @@ public class Main extends ApplicationAdapter {
         imgWasp.dispose();
         imgTrump.dispose();
     }
+}
+
+class SB2 extends SpriteBatch{
+
 }
