@@ -1,6 +1,7 @@
 package ru.d3wasp;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -9,7 +10,7 @@ public class Main extends ApplicationAdapter {
     public static final float SCR_HEIGHT = 720;
 
     private SpriteBatch batch;
-    SB2 batch2;
+
     private Texture imgBackGround;
     private Texture imgWasp;
     private Texture imgTrump;
@@ -20,7 +21,6 @@ public class Main extends ApplicationAdapter {
     @Override
     public void create() {
         batch = new SpriteBatch();
-        batch2 = new SB2();
 
         imgBackGround = new Texture("bg.png");
         imgWasp = new Texture("wasp.png");
@@ -36,6 +36,18 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void render() {
+        // касания
+        if(Gdx.input.justTouched()){
+            float tx = Gdx.input.getX();
+            float ty = SCR_HEIGHT-Gdx.input.getY();
+            for (int i = 0; i < wasp.length; i++) {
+                if(wasp[i].hit(tx, ty)) System.out.println("hit to Wasp");
+            }
+            for (int i = 0; i < trump.length; i++) {
+                if(trump[i].hit(tx, ty)) System.out.println("hit to Trump");
+            }
+        }
+
         // события
         for (int i = 0; i < wasp.length; i++) {
             wasp[i].fly();
@@ -64,8 +76,4 @@ public class Main extends ApplicationAdapter {
         imgWasp.dispose();
         imgTrump.dispose();
     }
-}
-
-class SB2 extends SpriteBatch{
-
 }

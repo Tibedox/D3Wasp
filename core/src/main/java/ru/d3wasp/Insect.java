@@ -31,4 +31,8 @@ public class Insect {
     public boolean flip(){
         return stepX<0;
     }
+
+    boolean hit(float tx, float ty){
+        return x<tx && tx<x+width && y<ty && ty<y+height;
+    }
 }
