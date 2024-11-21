@@ -4,7 +4,8 @@ package ru.d3wasp;
 import com.badlogic.gdx.math.MathUtils;
 
 public class Trump extends Insect {
-    float rotation, speedRotation;
+    public float rotation;
+    private float speedRotation;
 
     public Trump(float x, float y){
         super(x, y);

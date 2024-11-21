@@ -2,6 +2,7 @@ package ru.d3wasp;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -18,6 +19,7 @@ public class Main extends ApplicationAdapter {
     private Texture imgBackGround;
     private Texture imgWasp;
     private Texture imgTrump;
+    private Sound sndWasp;
 
     private Wasp[] wasp = new Wasp[33];
     private Trump[] trump = new Trump[22];
@@ -32,6 +34,7 @@ public class Main extends ApplicationAdapter {
         imgBackGround = new Texture("bg.png");
         imgWasp = new Texture("wasp.png");
         imgTrump = new Texture("trump.png");
+        sndWasp = Gdx.audio.newSound(Gdx.files.internal("wasp.mp3"));
 
         for (int i = 0; i < wasp.length; i++) {
             wasp[i] = new Wasp(SCR_WIDTH/2, SCR_HEIGHT/2);
@@ -48,10 +51,10 @@ public class Main extends ApplicationAdapter {
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
 
-
             for (Wasp w: wasp) {
                 if(w.hit(touch.x, touch.y)) {
                     w.leave();
+                    sndWasp.play();
                 }
             }
             for (Trump t: trump) {
@@ -84,5 +87,6 @@ public class Main extends ApplicationAdapter {
         imgBackGround.dispose();
         imgWasp.dispose();
         imgTrump.dispose();
+        sndWasp.dispose();
     }
 }
