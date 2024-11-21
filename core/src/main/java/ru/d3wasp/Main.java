@@ -40,35 +40,30 @@ public class Main extends ApplicationAdapter {
         if(Gdx.input.justTouched()){
             float tx = Gdx.input.getX();
             float ty = SCR_HEIGHT-Gdx.input.getY();
-            for (int i = 0; i < wasp.length; i++) {
-                if(wasp[i].hit(tx, ty)) {
-                    wasp[i].leave();
+            for (Wasp w: wasp) {
+                if(w.hit(tx, ty)) {
+                    w.leave();
                 }
             }
-            for (int i = 0; i < trump.length; i++) {
-                if(trump[i].hit(tx, ty)) {
-                    trump[i].leave();
+            for (Trump t: trump) {
+                if(t.hit(tx, ty)) {
+                    t.leave();
                 }
             }
         }
 
         // события
-        for (int i = 0; i < wasp.length; i++) {
-            wasp[i].fly();
-        }
-        // for(Wasp w: wasp) w.fly();
-        for (int i = 0; i < trump.length; i++) {
-            trump[i].fly();
-        }
+        for (Wasp w: wasp) w.fly();
+        for (Trump t: trump) t.fly();
 
         // отрисовка
         batch.begin();
         batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
-        for (int i = 0; i < wasp.length; i++) {
-            batch.draw(imgWasp, wasp[i].x, wasp[i].y, wasp[i].width, wasp[i].height, 0, 0, 200, 200, wasp[i].flip(), false);
+        for(Wasp w: wasp){
+            batch.draw(imgWasp, w.x, w.y, w.width, w.height, 0, 0, 200, 200, w.flip(), w.isLeave);
         }
-        for (int i = 0; i < trump.length; i++) {
-            batch.draw(imgTrump, trump[i].x, trump[i].y, trump[i].width, trump[i].height, 0, 0, 250, 200, trump[i].flip(), false);
+        for (Trump t: trump) {
+            batch.draw(imgTrump, t.x, t.y, t.width/2, t.height/2, t.width, t.height, 1, 1, t.rotation, 0, 0, 250, 200, t.flip(), t.isLeave);
         }
         batch.end();
     }

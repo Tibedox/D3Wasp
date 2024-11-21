@@ -35,6 +35,10 @@ abstract public class Insect {
         return stepX<0;
     }
 
+    public boolean flipLeave(){
+        return isLeave;
+    }
+
     boolean hit(float tx, float ty){
         return x<tx && tx<x+width && y<ty && ty<y+height;
     }
