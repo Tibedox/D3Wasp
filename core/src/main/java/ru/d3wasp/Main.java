@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
@@ -19,6 +20,7 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Vector3 touch;
+    private BitmapFont font;
 
     private Texture imgBackGround;
     private Texture imgWasp;
@@ -28,6 +30,7 @@ public class Main extends ApplicationAdapter {
 
     private Wasp[] wasp = new Wasp[33];
     private Trump[] trump = new Trump[22];
+    private int counterInsects;
 
     @Override
     public void create() {
@@ -35,6 +38,7 @@ public class Main extends ApplicationAdapter {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
         touch = new Vector3();
+        font = new BitmapFont(Gdx.files.internal("stylo55.fnt"));
 
         imgBackGround = new Texture("bg2.jpg");
         imgWasp = new Texture("wasp.png");
@@ -60,11 +64,13 @@ public class Main extends ApplicationAdapter {
             for (Wasp w: wasp) {
                 if(w.hit(touch.x, touch.y)) {
                     w.leave();
+                    counterInsects++;
                 }
             }
             for (Trump t: trump) {
                 if(t.hit(touch.x, touch.y)) {
                     t.leave();
+                    counterInsects++;
                 }
             }
         }
@@ -83,12 +89,14 @@ public class Main extends ApplicationAdapter {
         for (Trump t: trump) {
             batch.draw(t.img, t.x, t.y, t.width/2, t.height/2, t.width, t.height, 1, 1, t.rotation, 0, 0, t.img.getWidth(), t.img.getHeight(), t.flip(), t.isLeave);
         }
+        font.draw(batch, "Сбито: "+counterInsects, 10, SCR_HEIGHT-10);
         batch.end();
     }
 
     @Override
     public void dispose() {
         batch.dispose();
+        font.dispose();
         imgBackGround.dispose();
         imgWasp.dispose();
         imgTrump.dispose();
