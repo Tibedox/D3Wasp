@@ -9,8 +9,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 
 public class Main extends ApplicationAdapter {
-    public static final float SCR_WIDTH = 1280;
-    public static final float SCR_HEIGHT = 720;
+    public static final float SCR_WIDTH = 1600;
+    public static final float SCR_HEIGHT = 900;
+    public static final float SPAWN_WASP_X = 390;
+    public static final float SPAWN_WASP_Y = 595;
+    public static final float SPAWN_TRUMP_X = 1126;
+    public static final float SPAWN_TRUMP_Y = 750;
 
     private SpriteBatch batch;
     private OrthographicCamera camera;
@@ -20,6 +24,7 @@ public class Main extends ApplicationAdapter {
     private Texture imgWasp;
     private Texture imgTrump;
     private Sound sndWasp;
+    private Sound sndTrump;
 
     private Wasp[] wasp = new Wasp[33];
     private Trump[] trump = new Trump[22];
@@ -31,16 +36,17 @@ public class Main extends ApplicationAdapter {
         camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
         touch = new Vector3();
 
-        imgBackGround = new Texture("bg.png");
+        imgBackGround = new Texture("bg2.jpg");
         imgWasp = new Texture("wasp.png");
         imgTrump = new Texture("trump.png");
         sndWasp = Gdx.audio.newSound(Gdx.files.internal("wasp.mp3"));
+        sndTrump = Gdx.audio.newSound(Gdx.files.internal("trump2.mp3"));
 
         for (int i = 0; i < wasp.length; i++) {
-            wasp[i] = new Wasp(SCR_WIDTH/2, SCR_HEIGHT/2);
+            wasp[i] = new Wasp(SPAWN_WASP_X, SPAWN_WASP_Y, imgWasp, sndWasp);
         }
         for (int i = 0; i < trump.length; i++) {
-            trump[i] = new Trump(0, 0);
+            trump[i] = new Trump(SPAWN_TRUMP_X, SPAWN_TRUMP_Y, imgTrump, sndTrump);
         }
     }
 
@@ -50,11 +56,10 @@ public class Main extends ApplicationAdapter {
         if(Gdx.input.justTouched()){
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
-
+            System.out.println(touch.x+" "+touch.y);
             for (Wasp w: wasp) {
                 if(w.hit(touch.x, touch.y)) {
                     w.leave();
-                    sndWasp.play();
                 }
             }
             for (Trump t: trump) {
@@ -73,10 +78,10 @@ public class Main extends ApplicationAdapter {
         batch.begin();
         batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
         for(Wasp w: wasp){
-            batch.draw(imgWasp, w.x, w.y, w.width, w.height, 0, 0, 200, 200, w.flip(), w.isLeave);
+            batch.draw(w.img, w.x, w.y, w.width, w.height, 0, 0, w.img.getWidth(), w.img.getHeight(), w.flip(), w.isLeave);
         }
         for (Trump t: trump) {
-            batch.draw(imgTrump, t.x, t.y, t.width/2, t.height/2, t.width, t.height, 1, 1, t.rotation, 0, 0, 250, 200, t.flip(), t.isLeave);
+            batch.draw(t.img, t.x, t.y, t.width/2, t.height/2, t.width, t.height, 1, 1, t.rotation, 0, 0, t.img.getWidth(), t.img.getHeight(), t.flip(), t.isLeave);
         }
         batch.end();
     }
@@ -88,5 +93,6 @@ public class Main extends ApplicationAdapter {
         imgWasp.dispose();
         imgTrump.dispose();
         sndWasp.dispose();
+        sndTrump.dispose();
     }
 }

@@ -1,9 +1,11 @@
 package ru.d3wasp;
 
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 
 public class Wasp extends Insect {
-    public Wasp(float x, float y){
-        super(x, y);
+    public Wasp(float x, float y, Texture img, Sound snd){
+        super(x, y, img, snd);
     }
 
     @Override
@@ -11,5 +13,6 @@ public class Wasp extends Insect {
         stepX = 0;
         stepY = -10;
         isLeave = true;
+        snd.play();
     }
 }

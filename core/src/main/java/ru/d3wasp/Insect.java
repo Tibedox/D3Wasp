@@ -1,8 +1,9 @@
 package ru.d3wasp;
 
-import static ru.d3wasp.Main.SCR_HEIGHT;
-import static ru.d3wasp.Main.SCR_WIDTH;
+import static ru.d3wasp.Main.*;
 
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 
 abstract public class Insect {
@@ -13,10 +14,14 @@ abstract public class Insect {
     float stepX;
     float stepY;
     boolean isLeave;
+    public Texture img;
+    public Sound snd;
 
-    public Insect(float x, float y){
+    public Insect(float x, float y, Texture img, Sound snd){
         this.x = x;
         this.y = y;
+        this.img = img;
+        this.snd = snd;
         width = height = MathUtils.random(50, 150);
         stepX = MathUtils.random(-5f, 5);
         stepY = MathUtils.random(-5f, 5);
@@ -33,10 +38,6 @@ abstract public class Insect {
 
     public boolean flip(){
         return stepX<0;
-    }
-
-    public boolean flipLeave(){
-        return isLeave;
     }
 
     boolean hit(float tx, float ty){
