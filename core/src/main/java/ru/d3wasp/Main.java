@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class Main extends ApplicationAdapter {
     public static final float SCR_WIDTH = 1600;
@@ -31,6 +33,7 @@ public class Main extends ApplicationAdapter {
     private Wasp[] wasp = new Wasp[33];
     private Trump[] trump = new Trump[22];
     private int counterInsects;
+    private long timeStartGame;
 
     @Override
     public void create() {
@@ -52,6 +55,7 @@ public class Main extends ApplicationAdapter {
         for (int i = 0; i < trump.length; i++) {
             trump[i] = new Trump(SPAWN_TRUMP_X, SPAWN_TRUMP_Y, imgTrump, sndTrump);
         }
+        timeStartGame = TimeUtils.millis();
     }
 
     @Override
@@ -90,6 +94,7 @@ public class Main extends ApplicationAdapter {
             batch.draw(t.img, t.x, t.y, t.width/2, t.height/2, t.width, t.height, 1, 1, t.rotation, 0, 0, t.img.getWidth(), t.img.getHeight(), t.flip(), t.isLeave);
         }
         font.draw(batch, "Сбито: "+counterInsects, 10, SCR_HEIGHT-10);
+        font.draw(batch, currentTime(TimeUtils.millis()-timeStartGame), SCR_WIDTH-180, SCR_HEIGHT-10);
         batch.end();
     }
 
@@ -102,5 +107,13 @@ public class Main extends ApplicationAdapter {
         imgTrump.dispose();
         sndWasp.dispose();
         sndTrump.dispose();
+    }
+
+    private String currentTime(long time){
+        long msec = time%1000;
+        long sec = time/1000%60;
+        long min = time/1000/60%60;
+        //long hour = time/1000/60/60%24;
+        return min/10+min%10+":"+sec/10+sec%10+":"+msec/100;
     }
 }
