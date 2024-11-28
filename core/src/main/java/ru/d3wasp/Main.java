@@ -21,16 +21,17 @@ public class Main extends ApplicationAdapter {
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Vector3 touch;
-    private BitmapFont font;
 
+    private BitmapFont font40, font55, font70;
     private Texture imgBackGround;
     private Texture imgWasp;
     private Texture imgTrump;
     private Sound sndWasp;
     private Sound sndTrump;
 
-    private Wasp[] wasp = new Wasp[3];
-    private Trump[] trump = new Trump[2];
+    private Wasp[] wasp = new Wasp[1];
+    private Trump[] trump = new Trump[1];
+    private Player[] player = new Player[6];
     private int counterInsects;
     private long timeStartGame;
     private long timeCurrent;
@@ -42,8 +43,10 @@ public class Main extends ApplicationAdapter {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, SCR_WIDTH, SCR_HEIGHT);
         touch = new Vector3();
-        font = new BitmapFont(Gdx.files.internal("stylo55.fnt"));
 
+        font40 = new BitmapFont(Gdx.files.internal("font/stylo40.fnt"));
+        font55 = new BitmapFont(Gdx.files.internal("font/stylo55.fnt"));
+        font70 = new BitmapFont(Gdx.files.internal("font/stylo70.fnt"));
         imgBackGround = new Texture("bg2.jpg");
         imgWasp = new Texture("wasp.png");
         imgTrump = new Texture("trump.png");
@@ -55,6 +58,9 @@ public class Main extends ApplicationAdapter {
         }
         for (int i = 0; i < trump.length; i++) {
             trump[i] = new Trump(SPAWN_TRUMP_X, SPAWN_TRUMP_Y, imgTrump, sndTrump);
+        }
+        for (int i = 0; i < player.length; i++) {
+            player[i] = new Player("Noname", 0);
         }
         timeStartGame = TimeUtils.millis();
     }
@@ -80,6 +86,9 @@ public class Main extends ApplicationAdapter {
             }
             if (!isGameOver && counterInsects == trump.length + wasp.length) {
                 isGameOver = true;
+                player[player.length-1].name = "Winner";
+                player[player.length-1].time = timeCurrent;
+                sortPlayers();
             }
         }
 
@@ -98,15 +107,23 @@ public class Main extends ApplicationAdapter {
         for (Trump t : trump) {
             batch.draw(t.img, t.x, t.y, t.width/2, t.height/2, t.width, t.height, 1, 1, t.rotation, 0, 0, t.img.getWidth(), t.img.getHeight(), t.flip(), t.isLeave);
         }
-        font.draw(batch, "Сбито: " + counterInsects, 10, SCR_HEIGHT - 10);
-        font.draw(batch, currentTime(timeCurrent), SCR_WIDTH - 180, SCR_HEIGHT - 10);
+        font55.draw(batch, "Сбито: " + counterInsects, 10, SCR_HEIGHT - 10);
+        font55.draw(batch, currentTime(timeCurrent), SCR_WIDTH - 180, SCR_HEIGHT - 10);
+        if(isGameOver) {
+            for (int i = 0; i < player.length-1; i++) {
+                font70.draw(batch, player[i].name, 600, SCR_HEIGHT/4*3 - 70*i);
+                font70.draw(batch, player[i].time+"", 1000, SCR_HEIGHT/4*3 - 70*i);
+            }
+        }
         batch.end();
     }
 
     @Override
     public void dispose() {
         batch.dispose();
-        font.dispose();
+        font40.dispose();
+        font55.dispose();
+        font70.dispose();
         imgBackGround.dispose();
         imgWasp.dispose();
         imgTrump.dispose();
@@ -121,4 +138,27 @@ public class Main extends ApplicationAdapter {
         //long hour = time/1000/60/60%24;
         return min / 10 + min % 10 + ":" + sec / 10 + sec % 10 + ":" + msec / 100;
     }
+
+    private void sortPlayers(){
+        for (Player p : player) {
+            if (p.time == 0) p.time = Long.MAX_VALUE;
+        }
+
+        int n = player.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (player[j].time > player[j + 1].time) {
+                    // Меняем элементы местами
+                    Player temp = player[j];
+                    player[j] = player[j + 1];
+                    player[j + 1] = temp;
+                }
+            }
+        }
+
+        for (Player p : player) {
+            if (p.time == Long.MAX_VALUE) p.time = 0;
+        }
+    }
 }
+
