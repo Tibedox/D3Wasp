@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class Main extends ApplicationAdapter {
@@ -30,10 +29,12 @@ public class Main extends ApplicationAdapter {
     private Sound sndWasp;
     private Sound sndTrump;
 
-    private Wasp[] wasp = new Wasp[33];
-    private Trump[] trump = new Trump[22];
+    private Wasp[] wasp = new Wasp[3];
+    private Trump[] trump = new Trump[2];
     private int counterInsects;
     private long timeStartGame;
+    private long timeCurrent;
+    private boolean isGameOver;
 
     @Override
     public void create() {
@@ -61,40 +62,44 @@ public class Main extends ApplicationAdapter {
     @Override
     public void render() {
         // касания
-        if(Gdx.input.justTouched()){
+        if (Gdx.input.justTouched()) {
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
-            System.out.println(touch.x+" "+touch.y);
-            for (Wasp w: wasp) {
-                if(w.hit(touch.x, touch.y)) {
+            System.out.println(touch.x + " " + touch.y);
+            for (Wasp w : wasp) {
+                if (w.hit(touch.x, touch.y)) {
                     w.leave();
                     counterInsects++;
                 }
             }
-            for (Trump t: trump) {
-                if(t.hit(touch.x, touch.y)) {
+            for (Trump t : trump) {
+                if (t.hit(touch.x, touch.y)) {
                     t.leave();
                     counterInsects++;
                 }
             }
+            if (!isGameOver && counterInsects == trump.length + wasp.length) {
+                isGameOver = true;
+            }
         }
 
         // события
-        for (Wasp w: wasp) w.fly();
-        for (Trump t: trump) t.fly();
+        for (Wasp w : wasp) w.fly();
+        for (Trump t : trump) t.fly();
+        if (!isGameOver) timeCurrent = TimeUtils.millis() - timeStartGame;
 
         // отрисовка
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         batch.draw(imgBackGround, 0, 0, SCR_WIDTH, SCR_HEIGHT);
-        for(Wasp w: wasp){
+        for (Wasp w : wasp) {
             batch.draw(w.img, w.x, w.y, w.width, w.height, 0, 0, w.img.getWidth(), w.img.getHeight(), w.flip(), w.isLeave);
         }
-        for (Trump t: trump) {
+        for (Trump t : trump) {
             batch.draw(t.img, t.x, t.y, t.width/2, t.height/2, t.width, t.height, 1, 1, t.rotation, 0, 0, t.img.getWidth(), t.img.getHeight(), t.flip(), t.isLeave);
         }
-        font.draw(batch, "Сбито: "+counterInsects, 10, SCR_HEIGHT-10);
-        font.draw(batch, currentTime(TimeUtils.millis()-timeStartGame), SCR_WIDTH-180, SCR_HEIGHT-10);
+        font.draw(batch, "Сбито: " + counterInsects, 10, SCR_HEIGHT - 10);
+        font.draw(batch, currentTime(timeCurrent), SCR_WIDTH - 180, SCR_HEIGHT - 10);
         batch.end();
     }
 
@@ -109,11 +114,11 @@ public class Main extends ApplicationAdapter {
         sndTrump.dispose();
     }
 
-    private String currentTime(long time){
-        long msec = time%1000;
-        long sec = time/1000%60;
-        long min = time/1000/60%60;
+    private String currentTime(long time) {
+        long msec = time % 1000;
+        long sec = time / 1000 % 60;
+        long min = time / 1000 / 60 % 60;
         //long hour = time/1000/60/60%24;
-        return min/10+min%10+":"+sec/10+sec%10+":"+msec/100;
+        return min / 10 + min % 10 + ":" + sec / 10 + sec % 10 + ":" + msec / 100;
     }
 }
