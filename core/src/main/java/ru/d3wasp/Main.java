@@ -19,12 +19,16 @@ public class Main extends ApplicationAdapter {
     public static final float SPAWN_WASP_Y = 595;
     public static final float SPAWN_TRUMP_X = 1126;
     public static final float SPAWN_TRUMP_Y = 750;
+    public static final int PLAY_GAME = 0;
+    public static final int ENTER_NAME = 1;
+    public static final int GAME_OVER = 2;
 
     private SpriteBatch batch;
     private OrthographicCamera camera;
     private Vector3 touch;
 
     private BitmapFont font40, font55, font70, font90;
+    private InputKeyboard keyboard;
 
     private Texture imgBackGround;
     private Texture imgWasp;
@@ -35,13 +39,13 @@ public class Main extends ApplicationAdapter {
     WaspButton btnRestart;
     WaspButton btnClearTable;
 
-    private Wasp[] wasp = new Wasp[1];
-    private Trump[] trump = new Trump[1];
+    private Wasp[] wasp = new Wasp[33];
+    private Trump[] trump = new Trump[22];
     private Player[] player = new Player[6];
     private int counterInsects;
     private long timeStartGame;
     private long timeCurrent;
-    private boolean isGameOver;
+    private int gameState;
 
     @Override
     public void create() {
@@ -54,14 +58,17 @@ public class Main extends ApplicationAdapter {
         font55 = new BitmapFont(Gdx.files.internal("font/stylo55.fnt"));
         font70 = new BitmapFont(Gdx.files.internal("font/stylo70.fnt"));
         font90 = new BitmapFont(Gdx.files.internal("font/stylo90.fnt"));
+
+        keyboard = new InputKeyboard(font70, SCR_WIDTH, SCR_HEIGHT, 9);
+
         imgBackGround = new Texture("bg2.jpg");
         imgWasp = new Texture("wasp.png");
         imgTrump = new Texture("trump.png");
         sndWasp = Gdx.audio.newSound(Gdx.files.internal("wasp.mp3"));
         sndTrump = Gdx.audio.newSound(Gdx.files.internal("trump2.mp3"));
 
-        btnRestart = new WaspButton(font70, "RESTART", 640, 150);
-        btnClearTable = new WaspButton(font70, "clear", 720, 80);
+        btnRestart = new WaspButton(font55, "RESTART", 640, 150);
+        btnClearTable = new WaspButton(font55, "clear", 720, 80);
 
         for (int i = 0; i < player.length; i++) {
             player[i] = new Player("Noname", 0);
@@ -88,10 +95,14 @@ public class Main extends ApplicationAdapter {
                     counterInsects++;
                 }
             }
-            if (!isGameOver && counterInsects == trump.length + wasp.length) {
-                gameOver();
+            if (gameState == PLAY_GAME && counterInsects == trump.length + wasp.length) {
+                gameState = ENTER_NAME;
+                keyboard.start();
             }
-            if(isGameOver){
+            if(gameState == ENTER_NAME){
+                if (keyboard.touch(touch.x, touch.y)) gameOver(keyboard.getText());
+            }
+            if(gameState == GAME_OVER){
                 if(btnRestart.hit(touch.x, touch.y)){
                     gameRestart();
                 }
@@ -104,7 +115,7 @@ public class Main extends ApplicationAdapter {
         // события
         for (Wasp w : wasp) w.fly();
         for (Trump t : trump) t.fly();
-        if (!isGameOver) timeCurrent = TimeUtils.millis() - timeStartGame;
+        if (gameState == PLAY_GAME) timeCurrent = TimeUtils.millis() - timeStartGame;
 
         // отрисовка
         batch.setProjectionMatrix(camera.combined);
@@ -118,7 +129,8 @@ public class Main extends ApplicationAdapter {
         }
         font55.draw(batch, "Сбито: " + counterInsects, 10, SCR_HEIGHT - 10);
         font55.draw(batch, showTime(timeCurrent), SCR_WIDTH - 190, SCR_HEIGHT - 10);
-        if(isGameOver) {
+        keyboard.draw(batch);
+        if(gameState == GAME_OVER) {
             font90.draw(batch, "Game Over", 0, 700, SCR_WIDTH, Align.center, true);
             for (int i = 0; i < player.length-1; i++) {
                 font70.draw(batch, player[i].name, 450, 550 - 70*i);
@@ -142,6 +154,7 @@ public class Main extends ApplicationAdapter {
         imgTrump.dispose();
         sndWasp.dispose();
         sndTrump.dispose();
+        keyboard.dispose();
     }
 
     private String showTime(long time) {
@@ -198,16 +211,16 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-    private void gameOver(){
-        isGameOver = true;
-        player[player.length-1].name = "Winner";
+    private void gameOver(String name){
+        gameState = GAME_OVER;
+        player[player.length-1].name = name;
         player[player.length-1].time = timeCurrent;
         sortTableOfRecords();
         saveTableOfRecords();
     }
 
     private void gameRestart(){
-        isGameOver = false;
+        gameState = PLAY_GAME;
         counterInsects = 0;
         for (int i = 0; i < wasp.length; i++) {
             wasp[i] = new Wasp(SPAWN_WASP_X, SPAWN_WASP_Y, imgWasp, sndWasp);
