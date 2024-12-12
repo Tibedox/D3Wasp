@@ -33,6 +33,7 @@ public class Main extends ApplicationAdapter {
     private Sound sndTrump;
 
     WaspButton btnRestart;
+    WaspButton btnClearTable;
 
     private Wasp[] wasp = new Wasp[1];
     private Trump[] trump = new Trump[1];
@@ -60,18 +61,13 @@ public class Main extends ApplicationAdapter {
         sndTrump = Gdx.audio.newSound(Gdx.files.internal("trump2.mp3"));
 
         btnRestart = new WaspButton(font70, "RESTART", 640, 150);
+        btnClearTable = new WaspButton(font70, "clear", 720, 80);
 
-        for (int i = 0; i < wasp.length; i++) {
-            wasp[i] = new Wasp(SPAWN_WASP_X, SPAWN_WASP_Y, imgWasp, sndWasp);
-        }
-        for (int i = 0; i < trump.length; i++) {
-            trump[i] = new Trump(SPAWN_TRUMP_X, SPAWN_TRUMP_Y, imgTrump, sndTrump);
-        }
         for (int i = 0; i < player.length; i++) {
             player[i] = new Player("Noname", 0);
         }
         loadTableOfRecords();
-        timeStartGame = TimeUtils.millis();
+        gameRestart();
     }
 
     @Override
@@ -98,6 +94,9 @@ public class Main extends ApplicationAdapter {
             if(isGameOver){
                 if(btnRestart.hit(touch.x, touch.y)){
                     gameRestart();
+                }
+                if(btnClearTable.hit(touch.x, touch.y)){
+                    clearTableOfRecords();
                 }
             }
         }
@@ -126,6 +125,7 @@ public class Main extends ApplicationAdapter {
                 font70.draw(batch, showTime(player[i].time), 900, 550 - 70*i);
             }
             btnRestart.font.draw(batch, btnRestart.text, btnRestart.x, btnRestart.y);
+            btnClearTable.font.draw(batch, btnClearTable.text, btnClearTable.x, btnClearTable.y);
         }
         batch.end();
     }
@@ -188,6 +188,13 @@ public class Main extends ApplicationAdapter {
         for (int i = 0; i < player.length; i++) {
             player[i].name = prefs.getString("name"+i, "Noname");
             player[i].time = prefs.getLong("time"+i, 0);
+        }
+    }
+
+    private void clearTableOfRecords(){
+        for (Player p : player) {
+            p.name = "Noname";
+            p.time = 0;
         }
     }
 
