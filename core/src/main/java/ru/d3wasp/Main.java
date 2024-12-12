@@ -2,12 +2,14 @@ package ru.d3wasp;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class Main extends ApplicationAdapter {
@@ -22,12 +24,15 @@ public class Main extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Vector3 touch;
 
-    private BitmapFont font40, font55, font70;
+    private BitmapFont font40, font55, font70, font90;
+
     private Texture imgBackGround;
     private Texture imgWasp;
     private Texture imgTrump;
     private Sound sndWasp;
     private Sound sndTrump;
+
+    WaspButton btnRestart;
 
     private Wasp[] wasp = new Wasp[1];
     private Trump[] trump = new Trump[1];
@@ -47,11 +52,14 @@ public class Main extends ApplicationAdapter {
         font40 = new BitmapFont(Gdx.files.internal("font/stylo40.fnt"));
         font55 = new BitmapFont(Gdx.files.internal("font/stylo55.fnt"));
         font70 = new BitmapFont(Gdx.files.internal("font/stylo70.fnt"));
+        font90 = new BitmapFont(Gdx.files.internal("font/stylo90.fnt"));
         imgBackGround = new Texture("bg2.jpg");
         imgWasp = new Texture("wasp.png");
         imgTrump = new Texture("trump.png");
         sndWasp = Gdx.audio.newSound(Gdx.files.internal("wasp.mp3"));
         sndTrump = Gdx.audio.newSound(Gdx.files.internal("trump2.mp3"));
+
+        btnRestart = new WaspButton(font70, "RESTART", 640, 150);
 
         for (int i = 0; i < wasp.length; i++) {
             wasp[i] = new Wasp(SPAWN_WASP_X, SPAWN_WASP_Y, imgWasp, sndWasp);
@@ -62,6 +70,7 @@ public class Main extends ApplicationAdapter {
         for (int i = 0; i < player.length; i++) {
             player[i] = new Player("Noname", 0);
         }
+        loadTableOfRecords();
         timeStartGame = TimeUtils.millis();
     }
 
@@ -71,7 +80,6 @@ public class Main extends ApplicationAdapter {
         if (Gdx.input.justTouched()) {
             touch.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touch);
-            System.out.println(touch.x + " " + touch.y);
             for (Wasp w : wasp) {
                 if (w.hit(touch.x, touch.y)) {
                     w.leave();
@@ -85,10 +93,12 @@ public class Main extends ApplicationAdapter {
                 }
             }
             if (!isGameOver && counterInsects == trump.length + wasp.length) {
-                isGameOver = true;
-                player[player.length-1].name = "Winner";
-                player[player.length-1].time = timeCurrent;
-                sortPlayers();
+                gameOver();
+            }
+            if(isGameOver){
+                if(btnRestart.hit(touch.x, touch.y)){
+                    gameRestart();
+                }
             }
         }
 
@@ -108,12 +118,14 @@ public class Main extends ApplicationAdapter {
             batch.draw(t.img, t.x, t.y, t.width/2, t.height/2, t.width, t.height, 1, 1, t.rotation, 0, 0, t.img.getWidth(), t.img.getHeight(), t.flip(), t.isLeave);
         }
         font55.draw(batch, "Сбито: " + counterInsects, 10, SCR_HEIGHT - 10);
-        font55.draw(batch, currentTime(timeCurrent), SCR_WIDTH - 180, SCR_HEIGHT - 10);
+        font55.draw(batch, showTime(timeCurrent), SCR_WIDTH - 190, SCR_HEIGHT - 10);
         if(isGameOver) {
+            font90.draw(batch, "Game Over", 0, 700, SCR_WIDTH, Align.center, true);
             for (int i = 0; i < player.length-1; i++) {
-                font70.draw(batch, player[i].name, 600, SCR_HEIGHT/4*3 - 70*i);
-                font70.draw(batch, player[i].time+"", 1000, SCR_HEIGHT/4*3 - 70*i);
+                font70.draw(batch, player[i].name, 450, 550 - 70*i);
+                font70.draw(batch, showTime(player[i].time), 900, 550 - 70*i);
             }
+            btnRestart.font.draw(batch, btnRestart.text, btnRestart.x, btnRestart.y);
         }
         batch.end();
     }
@@ -124,6 +136,7 @@ public class Main extends ApplicationAdapter {
         font40.dispose();
         font55.dispose();
         font70.dispose();
+        font90.dispose();
         imgBackGround.dispose();
         imgWasp.dispose();
         imgTrump.dispose();
@@ -131,7 +144,7 @@ public class Main extends ApplicationAdapter {
         sndTrump.dispose();
     }
 
-    private String currentTime(long time) {
+    private String showTime(long time) {
         long msec = time % 1000;
         long sec = time / 1000 % 60;
         long min = time / 1000 / 60 % 60;
@@ -139,7 +152,7 @@ public class Main extends ApplicationAdapter {
         return min / 10 + min % 10 + ":" + sec / 10 + sec % 10 + ":" + msec / 100;
     }
 
-    private void sortPlayers(){
+    private void sortTableOfRecords(){
         for (Player p : player) {
             if (p.time == 0) p.time = Long.MAX_VALUE;
         }
@@ -159,6 +172,43 @@ public class Main extends ApplicationAdapter {
         for (Player p : player) {
             if (p.time == Long.MAX_VALUE) p.time = 0;
         }
+    }
+
+    private void saveTableOfRecords(){
+        Preferences prefs = Gdx.app.getPreferences("WaspTable");
+        for (int i = 0; i < player.length; i++) {
+            prefs.putString("name"+i, player[i].name);
+            prefs.putLong("time"+i, player[i].time);
+        }
+        prefs.flush();
+    }
+
+    private void loadTableOfRecords(){
+        Preferences prefs = Gdx.app.getPreferences("WaspTable");
+        for (int i = 0; i < player.length; i++) {
+            player[i].name = prefs.getString("name"+i, "Noname");
+            player[i].time = prefs.getLong("time"+i, 0);
+        }
+    }
+
+    private void gameOver(){
+        isGameOver = true;
+        player[player.length-1].name = "Winner";
+        player[player.length-1].time = timeCurrent;
+        sortTableOfRecords();
+        saveTableOfRecords();
+    }
+
+    private void gameRestart(){
+        isGameOver = false;
+        counterInsects = 0;
+        for (int i = 0; i < wasp.length; i++) {
+            wasp[i] = new Wasp(SPAWN_WASP_X, SPAWN_WASP_Y, imgWasp, sndWasp);
+        }
+        for (int i = 0; i < trump.length; i++) {
+            trump[i] = new Trump(SPAWN_TRUMP_X, SPAWN_TRUMP_Y, imgTrump, sndTrump);
+        }
+        timeStartGame = TimeUtils.millis();
     }
 }
 
